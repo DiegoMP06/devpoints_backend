@@ -21,7 +21,7 @@ class ContestController extends Controller
     {
         $contests = Contest::where('user_id', $request->user()->id)
             ->orWhereRelation('evaluators', 'user_id', $request->user()->id)
-            ->get();
+            ->paginate(20);
 
         return new ContestCollection($contests);
     }
@@ -40,7 +40,7 @@ class ContestController extends Controller
         $nameImage = Str::uuid() . '.' . $file->extension();
 
         $image = Image::read($file);
-        $image->cover(800, 800);
+        $image->cover(500, 500);
 
         if (!File::exists(Storage::path('contests'))) {
             File::makeDirectory(Storage::path('contests'));
@@ -65,7 +65,7 @@ class ContestController extends Controller
     public function show(Contest $contest)
     {
         return new ContestCollection([
-            $contest->load(['teams', 'exercises', 'evaluators'])
+            $contest->load(['teams', 'exercises', 'evaluators', 'user'])
         ]);
     }
 
@@ -85,7 +85,7 @@ class ContestController extends Controller
             $nameImage = Str::uuid() . '.' . $file->extension();
 
             $image = Image::read($file);
-            $image->cover(800, 800);
+            $image->cover(500, 500);
 
             if (!File::exists(Storage::path('contests'))) {
                 File::makeDirectory(Storage::path('contests'));

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ContestSummaryController;
 use App\Http\Controllers\Dashboard\AssessmentController;
 use App\Http\Controllers\Dashboard\ContestController;
 use App\Http\Controllers\Dashboard\EvaluatorController;
@@ -8,15 +9,25 @@ use App\Http\Controllers\Dashboard\SearchForUsersForEvaluatorsController;
 use App\Http\Controllers\Dashboard\TeamController;
 use App\Http\Controllers\Dashboard\TeamMemberController;
 use App\Http\Controllers\Dashboard\UpdateStatusContestController;
+use App\Http\Controllers\FavoriteContestController;
+use App\Http\Controllers\HomeController;
 use App\Http\Middleware\CreatorOfTheContest;
 use App\Http\Middleware\EvaluatorOfTheContest;
+use App\Http\Middleware\IsContestPublished;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/contests/search', HomeController::class)->name('contests.search');
+
+Route::get('/contests/{contest}/summary', ContestSummaryController::class)->name('contests.summary')->middleware(IsContestPublished::class);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', fn(Request $request) => $request->user());
 
     Route::apiResource('/contests', ContestController::class)->only(['index', 'store']);
+
+    Route::apiResource('/favorites', FavoriteContestController::class)->only(['index', 'store']);
+    Route::delete('/favorites/{favorite_contest}', [FavoriteContestController::class, 'destroy'])->name('favorites.destroy');
 
     Route::middleware(CreatorOfTheContest::class)->group(function () {
         Route::apiResource('/contests', ContestController::class)->only(['update', 'destroy']);

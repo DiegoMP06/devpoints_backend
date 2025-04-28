@@ -13,11 +13,7 @@ class UpdateStatusContestController extends Controller
      */
     public function __invoke(Request $request, Contest $contest)
     {
-        $data = $request->validate([
-            'is_published' => ['required', 'boolean'],
-        ], Contest::$validateMessages);
-
-        $contest->is_published = $data['is_published'];
+        $contest->is_published = !$contest->is_published;
         $contest->save();
 
         return response()->json([

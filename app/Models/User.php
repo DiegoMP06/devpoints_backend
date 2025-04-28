@@ -66,4 +66,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsToMany(Contest::class, 'contest_users', 'user_id', 'contest_id')->withPivot(['id']);
     }
+
+    public function favorites()
+    {
+        return $this->belongsToMany(Contest::class, 'favorite_contests', 'user_id', 'contest_id')->withPivot(['id']);
+    }
 }

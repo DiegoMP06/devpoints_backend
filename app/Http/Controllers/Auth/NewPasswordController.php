@@ -29,7 +29,7 @@ class NewPasswordController extends Controller
             'token.required' => 'El token es requerido.',
             'email.required' => 'El email es requerido.',
             'email.email' => 'El email debe ser una dirección de correo electrónico válida.',
-            'password.required' => 'La contraseña es requerido.',
+            'password.required' => 'La contraseña es requerida.',
             'password.confirmed' => 'Las contraseñas no coinciden.',
         ]);
 

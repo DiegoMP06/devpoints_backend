@@ -21,9 +21,12 @@ class Contest extends Model
         'image.file' => 'La imagen es invalida',
         'image.image' => 'La imagen es invalida',
         'image.max' => 'La imagen es muy pesada',
-        'is_published.boolean' => 'El estado es invalido',
-        'is_published.required' => 'El usuario es requerido',
     ];
+
+    public function isPublished()
+    {
+        return $this->is_published ? true : false;
+    }
 
     public function user()
     {
@@ -43,5 +46,10 @@ class Contest extends Model
     public function evaluators()
     {
         return $this->belongsToMany(User::class, 'contest_users', 'contest_id', 'user_id')->withPivot(['id']);
+    }
+
+    public function saves()
+    {
+        return $this->belongsToMany(User::class, 'favorite_contests', 'contest_id', 'user_id')->withPivot(['id']);
     }
 }
