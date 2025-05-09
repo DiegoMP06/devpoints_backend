@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Contest extends Model
 {
@@ -11,6 +12,9 @@ class Contest extends Model
         'image',
         'is_published',
         'user_id',
+        'started_at',
+        'ended_at',
+        'is_ended',
     ];
 
     public static $validateMessages = [
@@ -21,11 +25,26 @@ class Contest extends Model
         'image.file' => 'La imagen es invalida',
         'image.image' => 'La imagen es invalida',
         'image.max' => 'La imagen es muy pesada',
+        'started_at.required' => 'La fecha de inicio es requerida',
+        'started_at.date' => 'La fecha de inicio es invalida',
+        'started_at.date_format' => 'La fecha de inicio es invalida',
+        'ended_at.required' => 'La fecha de fin es requerida',
+        'ended_at.date' => 'La fecha de fin es invalida',
+        'ended_at.date_format' => 'La fecha de fin es invalida',
     ];
 
     public function isPublished()
     {
         return $this->is_published ? true : false;
+    }
+
+    public function canEvaluate()
+    {
+        $now = Carbon::now()->getTimestamp();
+        $startedAt = Carbon::parse($this->started_at)->getTimestamp();
+        $endedAt = Carbon::parse($this->ended_at)->getTimestamp();
+
+        return !$this->is_ended && $startedAt <= $now && $endedAt >= $now;
     }
 
     public function user()
@@ -51,5 +70,10 @@ class Contest extends Model
     public function saves()
     {
         return $this->belongsToMany(User::class, 'favorite_contests', 'contest_id', 'user_id')->withPivot(['id']);
+    }
+
+    public function clasifications()
+    {
+        return $this->belongsToMany(Team::class, 'podium_clasifications', 'contest_id', 'team_id')->withPivot(['id', 'position', 'points']);
     }
 }

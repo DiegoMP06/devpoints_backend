@@ -10,9 +10,12 @@ use App\Http\Controllers\Dashboard\TeamController;
 use App\Http\Controllers\Dashboard\TeamMemberController;
 use App\Http\Controllers\Dashboard\UpdateStatusContestController;
 use App\Http\Controllers\FavoriteContestController;
+use App\Http\Controllers\Favorites\CheckFavoriteContestController;
 use App\Http\Controllers\HomeController;
+use App\Http\Middleware\CanEvaluate;
 use App\Http\Middleware\CreatorOfTheContest;
 use App\Http\Middleware\EvaluatorOfTheContest;
+use App\Http\Middleware\IsContestEnded;
 use App\Http\Middleware\IsContestPublished;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +31,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('/favorites', FavoriteContestController::class)->only(['index', 'store']);
     Route::delete('/favorites/{favorite_contest}', [FavoriteContestController::class, 'destroy'])->name('favorites.destroy');
+
+    Route::get('/contests/{contest}/favorites', CheckFavoriteContestController::class)->name('contests.favorites');
 
     Route::middleware(CreatorOfTheContest::class)->group(function () {
         Route::apiResource('/contests', ContestController::class)->only(['update', 'destroy']);
@@ -49,7 +54,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('/contests', ContestController::class)->only(['show']);
         Route::apiResource('/contests/{contest}/teams', TeamController::class)->only(['show']);
         Route::apiResource('/contests/{contest}/exercises', ExerciseController::class)->only(['index', 'show']);
-        Route::apiResource('/contests/{contest}/teams/{team}/assessments', AssessmentController::class)->only(['index', 'store', 'destroy']);
+        Route::get('/contests/{contest}/teams/{team}/assessments', [AssessmentController::class, 'index'])->name('assessments.index');
+        Route::apiResource('/contests/{contest}/teams/{team}/assessments', AssessmentController::class)->only(['store', 'destroy'])->middleware(CanEvaluate::class);
     });
 });
 

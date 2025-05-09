@@ -9,8 +9,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\ContestCollection;
-use Illuminate\Support\Facades\Gate;
 use Intervention\Image\Laravel\Facades\Image;
+use Illuminate\Validation\Rule;
 
 class ContestController extends Controller
 {
@@ -34,6 +34,8 @@ class ContestController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:100'],
             'image' => ['required', 'file', 'image', 'max:2056'],
+            'started_at' => ['required', 'date', Rule::date()->format('Y-m-d H:i:s')],
+            'ended_at' => ['required', 'date', Rule::date()->format('Y-m-d H:i:s')],
         ], Contest::$validateMessages);
 
         $file = $request->file('image');
@@ -52,6 +54,9 @@ class ContestController extends Controller
             'name' => $data['name'],
             'image' => $nameImage,
             'is_published' => 0,
+            'started_at' => $data['started_at'],
+            'ended_at' => $data['ended_at'],
+            'is_ended' => 0
         ]);
 
         return response()->json([
@@ -77,6 +82,8 @@ class ContestController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:100'],
             'image' => ['nullable', 'file', 'image', 'max:2056'],
+            'started_at' => ['required', 'date', Rule::date()->format('Y-m-d H:i:s')],
+            'ended_at' => ['required', 'date', Rule::date()->format('Y-m-d H:i:s')],
         ], Contest::$validateMessages);
 
         $file = $request->file('image');
@@ -97,6 +104,8 @@ class ContestController extends Controller
         }
 
         $contest->name = $data['name'];
+        $contest->started_at = $data['started_at'];
+        $contest->ended_at = $data['ended_at'];
         $contest->save();
 
         return response()->json([

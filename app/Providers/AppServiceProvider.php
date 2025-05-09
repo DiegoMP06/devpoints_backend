@@ -36,7 +36,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         VerifyEmail::toMailUsing(function (object $notifiable, string $url) {
-            $url = str_replace(url('/'), config('app.frontend_url'), $url);
+            // $url = str_replace(url('/'), config('app.frontend_url'), $url);
 
             return (new MailMessage)
                 ->subject('Verificar Cuenta')

@@ -15,14 +15,6 @@ class ContestSummaryController extends Controller
     {
         $contest->load(['user', 'evaluators', 'teams', 'exercises']);
 
-        $isSaved = null;
-
-        if ($request->user()) {
-            $isSaved = $contest->saves()->where('user_id', $request->user()->id)->first();
-        }
-
-        $contest->setAttribute('is_saved', $isSaved);
-
         return new ContestCollection([$contest]);
     }
 }

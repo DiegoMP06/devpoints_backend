@@ -30,6 +30,14 @@ class Team extends Model
         'members.*.mother_last_name.max' => 'El apellido materno debe tener máximo 100 caracteres',
     ];
 
+    public function teamScore() {
+        $suma = array_reduce($this->assessments->toArray(), function($total, $assessment) {
+            return $assessment['deleted_at'] ? $total : $total + $assessment['exercise']['points'];
+        }, 0);
+
+        return $suma;
+    }
+
     public function contest()
     {
         return $this->belongsTo(Contest::class);
