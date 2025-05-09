@@ -37,6 +37,6 @@ class PasswordResetLinkController extends Controller
             ]);
         }
 
-        return response()->json(['status' => "Se ha enviado un enlace de restablecimiento de contraseña por correo electrónico."]);
+        return response()->json(['message' => "Se ha enviado un enlace de restablecimiento de contraseña por correo electrónico."]);
     }
 }
